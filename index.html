@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>藻作坊｜蒜蒜屋｜VIVO噴霧油 補貨團</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--brown:#5c3317;--amber:#c8860a;--cream:#FFF8F0;--green:#3a7d44;--light-green:#e8f5ea}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--cream);color:#333;padding-bottom:80px}
+header{background:linear-gradient(135deg,var(--brown),#7a4a2a);color:#fff;text-align:center;padding:24px 16px 18px}
+header h1{font-size:1.4rem;margin-bottom:6px}
+header p{font-size:.85rem;opacity:.9}
+.deadline-bar{background:var(--amber);color:#fff;text-align:center;padding:10px;font-weight:700;font-size:.95rem;position:sticky;top:0;z-index:100}
+.deadline-bar.expired{background:#c0392b}
+.info-box{max-width:640px;margin:16px auto;padding:12px 16px;background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);font-size:.88rem;line-height:1.6}
+.info-box b{color:var(--brown)}
+.category{max-width:720px;margin:20px auto 0;padding:0 12px}
+.category h2{font-size:1.15rem;color:var(--brown);border-bottom:2px solid var(--amber);padding-bottom:6px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:768px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:1024px){.grid{grid-template-columns:repeat(4,1fr)}}
+.card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);display:flex;flex-direction:column;transition:transform .15s}
+.card:active{transform:scale(.97)}
+.card img{width:100%;aspect-ratio:1;object-fit:cover;background:#f5f0ea}
+.card-body{padding:10px 12px;flex:1;display:flex;flex-direction:column}
+.card-body h3{font-size:.88rem;line-height:1.3;margin-bottom:4px;color:#333}
+.card-body .spec{font-size:.75rem;color:#888;margin-bottom:6px}
+.card-body .badge{display:inline-block;background:#fff3cd;color:var(--amber);font-size:.7rem;padding:2px 6px;border-radius:4px;margin-bottom:4px;font-weight:600}
+.price-row{display:flex;align-items:center;justify-content:space-between;margin-top:auto}
+.price{color:#c0392b;font-weight:700;font-size:1.05rem}
+.qty-ctrl{display:flex;align-items:center;gap:0}
+.qty-ctrl button{width:30px;height:30px;border:none;background:var(--amber);color:#fff;font-size:1.1rem;cursor:pointer;border-radius:6px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.qty-ctrl button:disabled{opacity:.4}
+.qty-ctrl span{width:28px;text-align:center;font-weight:700;font-size:.95rem}
+.float-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid var(--amber);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;z-index:200;box-shadow:0 -2px 10px rgba(0,0,0,.1)}
+.float-bar .summary{font-size:.9rem;color:#555}
+.float-bar .summary b{color:var(--brown)}
+.float-bar .total{font-size:1.2rem;font-weight:700;color:#c0392b}
+.btn-checkout{background:var(--green);color:#fff;border:none;padding:10px 24px;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn-checkout:disabled{background:#aaa}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:16px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;padding:24px}
+.modal h2{color:var(--brown);margin-bottom:16px;font-size:1.2rem}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-weight:600;margin-bottom:4px;font-size:.9rem}
+.form-group input,.form-group textarea{width:100%;padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:.95rem}
+.form-group textarea{height:60px;resize:vertical}
+.order-preview{background:var(--light-green);border-radius:8px;padding:12px;margin-bottom:16px;font-size:.88rem;line-height:1.6}
+.order-preview .item{display:flex;justify-content:space-between}
+.order-preview .total-line{border-top:1px solid #bbb;margin-top:8px;padding-top:8px;font-weight:700;font-size:1rem;color:#c0392b}
+.btn-submit{width:100%;padding:14px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:1.05rem;font-weight:700;cursor:pointer}
+.btn-submit:disabled{background:#aaa}
+.btn-cancel{width:100%;padding:10px;background:none;border:1px solid #ccc;border-radius:10px;font-size:.95rem;cursor:pointer;margin-top:8px;color:#666}
+
+/* Success */
+.success-box{text-align:center;padding:20px 0}
+.success-box .checkmark{font-size:3rem;margin-bottom:8px}
+.success-box h3{color:var(--green);margin-bottom:12px}
+.copy-box{background:#f8f8f8;border-radius:8px;padding:12px;text-align:left;font-size:.85rem;line-height:1.5;white-space:pre-wrap;margin:12px 0}
+.btn-copy{background:var(--amber);color:#fff;border:none;padding:8px 20px;border-radius:8px;font-size:.9rem;cursor:pointer;font-weight:600}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>藻作坊｜蒜蒜屋｜VIVO噴霧油<br>補貨團</h1>
+  <p>健康系的廚房小魔法，讓料理一秒升級</p>
+</header>
+
+<div class="deadline-bar" id="deadlineBar">
+  <span id="countdown"></span>
+</div>
+
+<div class="info-box">
+  <b>取貨方式：</b>面交<br>
+  <b>出貨時間：</b>現貨商品結團後 5-7 個工作天依序出貨<br>
+  <b>結單時間：</b>2026/10/25（日）18:00
+</div>
+
+<div class="category" id="cat-vivo">
+  <h2>🫒 VIVO 噴霧油</h2>
+  <div class="grid" id="grid-vivo"></div>
+</div>
+
+<div class="category" id="cat-garlic">
+  <h2>🧄 蒜蒜屋</h2>
+  <div class="grid" id="grid-garlic"></div>
+</div>
+
+<div class="category" id="cat-algae">
+  <h2>🌿 藻作坊</h2>
+  <div class="grid" id="grid-algae"></div>
+</div>
+
+<div class="float-bar" id="floatBar" style="display:none">
+  <div>
+    <div class="summary">已選 <b id="totalItems">0</b> 件</div>
+    <div class="total">$<span id="totalPrice">0</span></div>
+  </div>
+  <button class="btn-checkout" id="btnCheckout">前往結單</button>
+</div>
+
+<!-- Checkout Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2>確認訂單</h2>
+    <div class="order-preview" id="orderPreview"></div>
+    <div class="form-group">
+      <label>姓名 *</label>
+      <input type="text" id="inputName" placeholder="請輸入姓名" autocomplete="name">
+    </div>
+    <div class="form-group">
+      <label>備註（選填）</label>
+      <textarea id="inputNote" placeholder="如有特殊需求請填寫"></textarea>
+    </div>
+    <button class="btn-submit" id="btnSubmit">送出訂單</button>
+    <button class="btn-cancel" id="btnCancel">返回修改</button>
+  </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal-overlay" id="successOverlay">
+  <div class="modal">
+    <div class="success-box">
+      <div class="checkmark">✅</div>
+      <h3>訂單已送出！</h3>
+      <p style="color:#666;font-size:.9rem;margin-bottom:12px">感謝訂購，結團後將統一通知面交時間</p>
+      <div class="copy-box" id="copyText"></div>
+      <button class="btn-copy" id="btnCopy">一鍵複製訂單</button>
+      <button class="btn-cancel" style="margin-top:12px" onclick="location.reload()">繼續訂購</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const GAS_URL = 'GAS_WEBAPP_URL_HERE';
+const DEADLINE = new Date('2026-10-25T18:00:00+08:00');
+
+const PRODUCTS = {
+  vivo: [
+    { id:'p01', name:'黑松露噴霧油', spec:'200ml｜效期2028/5', price:339, img:'images/p01.avif' },
+    { id:'p02', name:'玄米油噴霧油', spec:'200ml｜效期2028/4', price:339, img:'images/p02.avif' },
+    { id:'p03', name:'亞麻籽油噴霧油', spec:'200ml｜效期2028/5', price:339, img:'images/p03.avif' },
+    { id:'p04', name:'葡萄籽油噴霧油', spec:'200ml｜效期2028/5', price:339, img:'images/p04.avif' },
+    { id:'p05', name:'酪梨油噴霧油', spec:'200ml｜效期2028/10', price:339, img:'images/p05.avif' },
+  ],
+  garlic: [
+    { id:'p06', name:'黃金蒜酥', spec:'5g×12包｜效期2027/4', price:99, badge:'新品上市', img:'images/p06.avif' },
+  ],
+  algae: [
+    { id:'p07', name:'韓式三切岩燒海苔（原味）', spec:'40g/包', price:130, badge:'新品上市', img:'images/p07.avif' },
+    { id:'p08', name:'韓式三切岩燒海苔（梅子）', spec:'40g/包', price:130, badge:'新品上市', img:'images/p08.avif' },
+    { id:'p09', name:'六色海藻', spec:'80g/包（全素）', price:329, img:'images/p09.avif' },
+    { id:'p10', name:'海帶芽湯（蔬菜）', spec:'120g/罐（全素）', price:230, img:'images/p10.avif' },
+    { id:'p11', name:'海帶芽湯（青蔥）', spec:'120g/罐（五辛素）', price:230, img:'images/p11.avif' },
+    { id:'p12', name:'昆布鹽', spec:'300g/包（全素）', price:220, img:'images/p12.avif' },
+    { id:'p13', name:'椎茸昆布鹽', spec:'250g/包（全素）', price:220, badge:'新品上市', img:'images/p13.avif' },
+    { id:'p14', name:'焙煎胡麻醬', spec:'600ml/罐（奶素）', price:160, img:'images/p14.avif' },
+    { id:'p15', name:'胡麻和風醬', spec:'600ml/罐（全素）', price:160, img:'images/p15.avif' },
+    { id:'p16', name:'柚子和風醬', spec:'600ml/罐（全素）', price:160, img:'images/p16.avif' },
+    { id:'p17', name:'昆布佃煮海苔醬', spec:'190g/罐（全素）', price:160, img:'images/p17.avif' },
+    { id:'p18', name:'昆布椎茸高湯包', spec:'12入/袋（全素）', price:360, img:'images/p18.avif' },
+    { id:'p19', name:'番茄昆布高湯包', spec:'12入/袋（全素）', price:360, img:'images/p19.avif' },
+    { id:'p20', name:'藻安！海藻隨身包', spec:'6g×10包', price:360, badge:'新品上市', img:'images/p20.avif' },
+    { id:'p21', name:'焙煎胡麻隨身包', spec:'20ml×10包', price:130, badge:'新品上市', img:'images/p21.avif' },
+    { id:'p22', name:'胡麻和風隨身包', spec:'20ml×10包', price:130, badge:'新品上市', img:'images/p22.avif' },
+    { id:'p23', name:'柚子和風隨身包', spec:'20ml×10包', price:130, badge:'新品上市', img:'images/p23.avif' },
+  ]
+};
+
+const allProducts = [...PRODUCTS.vivo, ...PRODUCTS.garlic, ...PRODUCTS.algae];
+const qty = {};
+allProducts.forEach(p => qty[p.id] = 0);
+
+function renderProducts() {
+  Object.entries(PRODUCTS).forEach(([cat, items]) => {
+    const grid = document.getElementById('grid-' + cat);
+    grid.innerHTML = items.map(p => `
+      <div class="card">
+        <img src="${p.img}" alt="${p.name}" loading="lazy">
+        <div class="card-body">
+          ${p.badge ? '<span class="badge">' + p.badge + '</span>' : ''}
+          <h3>${p.name}</h3>
+          <div class="spec">${p.spec}</div>
+          <div class="price-row">
+            <span class="price">$${p.price}</span>
+            <div class="qty-ctrl">
+              <button onclick="changeQty('${p.id}',-1)" id="minus-${p.id}" disabled>−</button>
+              <span id="qty-${p.id}">0</span>
+              <button onclick="changeQty('${p.id}',1)">＋</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  });
+}
+
+function changeQty(id, delta) {
+  qty[id] = Math.max(0, qty[id] + delta);
+  document.getElementById('qty-' + id).textContent = qty[id];
+  document.getElementById('minus-' + id).disabled = qty[id] === 0;
+  updateFloat();
+}
+
+function updateFloat() {
+  let items = 0, total = 0;
+  allProducts.forEach(p => { items += qty[p.id]; total += qty[p.id] * p.price; });
+  document.getElementById('totalItems').textContent = items;
+  document.getElementById('totalPrice').textContent = total.toLocaleString();
+  document.getElementById('floatBar').style.display = items > 0 ? 'flex' : 'none';
+}
+
+function totalPrice() {
+  return allProducts.reduce((s, p) => s + qty[p.id] * p.price, 0);
+}
+
+function totalItems() {
+  return allProducts.reduce((s, p) => s + qty[p.id], 0);
+}
+
+// Countdown
+function updateCountdown() {
+  const now = new Date();
+  const diff = DEADLINE - now;
+  const bar = document.getElementById('deadlineBar');
+  if (diff <= 0) {
+    bar.classList.add('expired');
+    document.getElementById('countdown').textContent = '本團已截止';
+    document.getElementById('btnCheckout').disabled = true;
+    return;
+  }
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  let text = '距離截止還有 ';
+  if (d > 0) text += d + ' 天 ';
+  text += h + ' 時 ' + m + ' 分 ' + s + ' 秒';
+  document.getElementById('countdown').textContent = text;
+}
+
+// Checkout
+document.getElementById('btnCheckout').addEventListener('click', () => {
+  if (new Date() >= DEADLINE) { alert('本團已截止！'); return; }
+  const preview = document.getElementById('orderPreview');
+  let html = '';
+  allProducts.forEach(p => {
+    if (qty[p.id] > 0) {
+      html += `<div class="item"><span>${p.name} × ${qty[p.id]}</span><span>$${(p.price * qty[p.id]).toLocaleString()}</span></div>`;
+    }
+  });
+  html += `<div class="total-line">總金額：$${totalPrice().toLocaleString()}</div>`;
+  preview.innerHTML = html;
+  document.getElementById('modalOverlay').classList.add('show');
+});
+
+document.getElementById('btnCancel').addEventListener('click', () => {
+  document.getElementById('modalOverlay').classList.remove('show');
+});
+
+document.getElementById('btnSubmit').addEventListener('click', async () => {
+  const name = document.getElementById('inputName').value.trim();
+  if (!name) { alert('請輸入姓名'); return; }
+  if (new Date() >= DEADLINE) { alert('本團已截止！'); return; }
+
+  const btn = document.getElementById('btnSubmit');
+  btn.disabled = true;
+  btn.textContent = '送出中...';
+
+  const note = document.getElementById('inputNote').value.trim();
+  const summary = allProducts.filter(p => qty[p.id] > 0)
+    .map(p => `${p.name}×${qty[p.id]}`).join('、');
+
+  const params = new URLSearchParams({ name, summary, total: totalPrice(), note });
+  allProducts.forEach(p => { if (qty[p.id] > 0) params.append(p.id, qty[p.id]); });
+
+  try {
+    await fetch(GAS_URL, { method: 'POST', body: params, mode: 'no-cors' });
+    // Build copy text
+    let copyLines = `${name} 的訂單\n`;
+    allProducts.forEach(p => {
+      if (qty[p.id] > 0) copyLines += `• ${p.name} × ${qty[p.id]}  $${(p.price * qty[p.id]).toLocaleString()}\n`;
+    });
+    copyLines += `總金額：$${totalPrice().toLocaleString()}`;
+    if (note) copyLines += `\n備註：${note}`;
+
+    document.getElementById('copyText').textContent = copyLines;
+    document.getElementById('modalOverlay').classList.remove('show');
+    document.getElementById('successOverlay').classList.add('show');
+  } catch (e) {
+    alert('送出失敗，請稍後再試');
+    btn.disabled = false;
+    btn.textContent = '送出訂單';
+  }
+});
+
+document.getElementById('btnCopy').addEventListener('click', () => {
+  const text = document.getElementById('copyText').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    document.getElementById('btnCopy').textContent = '已複製！';
+    setTimeout(() => document.getElementById('btnCopy').textContent = '一鍵複製訂單', 2000);
+  });
+});
+
+// Init
+renderProducts();
+updateCountdown();
+setInterval(updateCountdown, 1000);
+</script>
+</body>
+</html>
